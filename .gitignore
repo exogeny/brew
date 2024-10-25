@@ -1,0 +1,61 @@
+# First, ignore everything.
+/*
+
+# Explicitly ignore OS X Finder thumbnail files.
+.DS_Store
+
+# Unignore the contents of `libexec` and `libruby` as that's where our code lives.
+!/libexec
+!/libruby
+!/shims
+
+# Unignore the contents of `vendor` and ignore the `portable-ruby`
+!/vendor
+/vendor/portable-ruby
+
+# Unignore `bin` contents and ignore all scripts (again).
+!/bin
+/bin/**
+
+# Unignore our `brew` script.
+!/bin/brew
+
+# Unignore our configuration/completions/documentation.
+!/.devcontainer
+!/.github
+!/completions
+!/docs
+!/manpages
+
+# Unignore our packaging files
+!/package
+/package/resources/LICENSE.rtf
+
+# Ignore generated documentation site
+/docs
+/_site
+/docs/bin
+/docs/.jekyll-metadata
+/docs/vendor
+/docs/Gemfile.lock
+
+# Unignore our root-level metadata files.
+!/.editorconfig
+!/.gitignore
+!/.irb_config
+!/.ruby-version
+!/.shellcheckrc
+!/.vale.ini
+!/.yardopts
+!/CHANGELOG.md
+!/CONTRIBUTING.md
+!/LICENSE.txt
+!/README.md
+
+# Unignore tests' bundle config
+!/libruby/test/.bundle/config
+
+# Unignore editor configuration
+!/.sublime
+/.sublime/homebrew.sublime-workspace
+!/.vscode
