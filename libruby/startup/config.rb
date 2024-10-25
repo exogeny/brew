@@ -18,9 +18,6 @@ HOMEBREW_LIBRARY = Pathname(ENV.fetch("HOMEBREW_LIBRARY")).freeze
 # Where shim scripts for various build and SCM tools are stored
 HOMEBREW_SHIMS_PATH = Pathname(ENV.fetch("HOMEBREW_SHIMS_PATH")).freeze
 
-# Where the vendor folder
-HOMEBREW_VENDOR_PATH = Pathname(ENV.fetch("HOMEBREW_VENDOR_PATH")).freeze
-
 # Where external data that has been incorporated into Homebrew is stored
 HOMEBREW_DATA_PATH = (HOMEBREW_PREFIX/"data").freeze
 

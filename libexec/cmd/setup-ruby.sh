@@ -1,3 +1,6 @@
+# HOMEBREW_LIBRARY is set by brew.sh
+# HOMEBREW_BREW_FILE is set by extend/ENV/super.rb
+# shellcheck disable=SC2154
 brew-setup-ruby() {
   source "${HOMEBREW_LIBRARY}/utils/helpers.sh"
   source "${HOMEBREW_LIBRARY}/utils/ruby.sh"

@@ -150,8 +150,8 @@ If there's no Homebrew Portable Ruby available for your processor:
 
 setup-gem-home-bundle-gemfile() {
   GEM_VERSION="$("${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" "${HOMEBREW_LIBRARY}/utils/ruby_sh/ruby_gem_version.rb")"
-  GEM_HOME="${HOMEBREW_LIBRARY}/vendor/bundle/ruby/${GEM_VERSION}"
-  BUNDLE_GEMFILE="${HOMEBREW_LIBRARY}/gemfile"
+  GEM_HOME="${HOMEBREW_VENDOR_PATH}/ruby/${GEM_VERSION}"
+  BUNDLE_GEMFILE="${HOMEBREW_LIBRUBY}/gemfile"
 
   export GEM_HOME
   export BUNDLE_GEMFILE

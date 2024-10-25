@@ -1,3 +1,4 @@
+# shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/utils/lock.sh"
 
 # Replaces the function in Library/Homebrew/brew.sh to cache the Curl/Git executable to
@@ -226,4 +227,64 @@ EOS
   lock update
 
   git_init_if_necessary
+
+  if [[ "${HOMEBREW_BREW_DEFAULT_GIT_REMOTE}" != "${HOMEBREW_BREW_GIT_REMOTE}" ]]
+  then
+    safe_cd "${HOMEBREW_REPOSITORY}"
+    echo "HOMEBREW_BREW_GIT_REMOTE set: using ${HOMEBREW_BREW_GIT_REMOTE} as the Homebrew/brew Git remote."
+    git remote set-url origin "${HOMEBREW_BREW_GIT_REMOTE}"
+    git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+    git fetch --force --tags origin
+    SKIP_FETCH_BREW_REPOSITORY=1
+  fi
+
+  safe_cd "${HOMEBREW_REPOSITORY}"
+  # This means a migration is needed but hasn't completed (yet).
+  if [[ "$(git config homebrew.linuxbrewmigrated 2>/dev/null)" == "false" ]]
+  then
+    export HOMEBREW_MIGRATE_LINUXBREW_FORMULAE=1
+  fi
+
+  # if an older system had a newer curl installed, change each repo's remote URL from git to https
+  if [[ -n "${HOMEBREW_SYSTEM_CURL_TOO_OLD}" && -x "${HOMEBREW_PREFIX}/opt/curl/bin/curl" ]] &&
+     [[ "$(git config remote.origin.url)" =~ ^git:// ]]
+  then
+    git config remote.origin.url "${HOMEBREW_BREW_GIT_REMOTE}"
+  fi
+
+  # kill all of subprocess on interrupt
+  trap '{ /usr/bin/pkill -P $$; wait; exit 130; }' SIGINT
+
+  local update_failed_file="${HOMEBREW_REPOSITORY}/.git/UPDATE_FAILED"
+  local missing_remote_ref_dirs_file="${HOMEBREW_REPOSITORY}/.git/FAILED_FETCH_DIRS"
+  rm -f "${update_failed_file}"
+  rm -f "${missing_remote_ref_dirs_file}"
+
+  wait
+  trap - SIGINT
+
+  if [[ -f "${missing_remote_ref_dirs_file}" ]]
+  then
+    HOMEBREW_MISSING_REMOTE_REF_DIRS="$(cat "${missing_remote_ref_dirs_file}")"
+    rm -f "${missing_remote_ref_dirs_file}"
+    export HOMEBREW_MISSING_REMOTE_REF_DIRS
+  fi
+
+  # HOMEBREW_UPDATE_AUTO wasn't modified in subshell.
+  # shellcheck disable=SC2031
+  if [[ -n "${HOMEBREW_UPDATED}" ]] ||
+     [[ -n "${HOMEBREW_UPDATE_FAILED}" ]] ||
+     [[ -n "${HOMEBREW_MISSING_REMOTE_REF_DIRS}" ]] ||
+     [[ -n "${HOMEBREW_UPDATE_FORCE}" ]] ||
+     [[ -n "${HOMEBREW_MIGRATE_LINUXBREW_FORMULAE}" ]] ||
+     [[ -d "${HOMEBREW_LIBRARY}/LinkedKegs" ]] ||
+     [[ ! -f "${HOMEBREW_CACHE}/all_commands_list.txt" ]] ||
+     [[ -n "${HOMEBREW_DEVELOPER}" && -z "${HOMEBREW_UPDATE_AUTO}" ]]
+  then
+    brew update-report "$@"
+    return $?
+  elif [[ -z "${HOMEBREW_UPDATE_AUTO}" && -z "${HOMEBREW_QUIET}" ]]
+  then
+    echo "Already up-to-date."
+  fi
 }

@@ -28,7 +28,7 @@ $LOAD_PATH.reject! { |path| path.start_with?(RbConfig::CONFIG["sitedir"]) }
 
 require "pathname"
 dir = __dir__ || raise("__dir__ is not defined")
-HOMEBREW_VENDOR = Pathname(dir).parent.parent.realpath.freeze
+HOMEBREW_VENDOR_PATH = "#{Pathname(dir).parent.parent.realpath}/vendor"
 HOMEBREW_LIBRARY_PATH = Pathname(dir).parent.realpath.freeze
 HOMEBREW_USING_PORTABLE_RUBY = RbConfig.ruby.include?("/vendor/portable-ruby/").freeze
 
@@ -50,7 +50,7 @@ unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
 end
 require_relative "bundler.rb"
 require "portable_ruby_gems" if HOMEBREW_USING_PORTABLE_RUBY
-$LOAD_PATH.unshift "#{HOMEBREW_VENDOR}/bundle/#{RUBY_ENGINE}/#{Gem.ruby_api_version}/gems/" \
+$LOAD_PATH.unshift "#{HOMEBREW_VENDOR_PATH}/#{RUBY_ENGINE}/#{Gem.ruby_api_version}/gems/" \
                    "bundler-#{Homebrew::HOMEBREW_BUNDLER_VERSION}/lib"
 $LOAD_PATH.uniq!
 
